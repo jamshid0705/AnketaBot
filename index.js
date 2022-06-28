@@ -3,6 +3,7 @@ const mongoose=require('mongoose')
 const dotenv=require('dotenv')
 dotenv.config({path:'./config.env'})
 const userModel=require('./userModel')
+const userRouter=require('./userRout')
 
 const app=express()
 
@@ -16,13 +17,14 @@ mongoose.connect(DB,{}).then(()=>{
 app.listen(4000,'127.0.0.1',()=>{
   console.log('4000 portga ulandi')
 })
-///////////////////////////////////////////////
+///////////////////// middleware //////////////////
 
-
+app.use('/api/v1/users',userRouter)
 
 ///////////////////////////////////////////////
 
 const TelegramApi = require("node-telegram-bot-api");
+
 
 const api = "5424238030:AAEDsh3TtZ58r3LtOOg-4zYn9D004IB74ds";
 let step = 0;
@@ -42,6 +44,10 @@ bot.on("callback_query", (obj) => {
   a++;
   arr.push(obj.data);
   if (a == 1) {
+    bot.sendMessage(
+      obj.message.chat.id,
+      "Ajoyib 👏"
+    );
     return bot.sendMessage(
       obj.message.chat.id,
       "Qaysi universitetda tahsil olasiz ?"
@@ -69,6 +75,22 @@ bot.on("callback_query", (obj) => {
   }
   addTour()
   
+
+  return bot.sendMessage(
+    obj.message.chat.id,
+    "Sizning ma'lumotlaringiz databasega saqlandi !"
+  );
+  }
+  if(obj.data==='yoq'){
+    step=0;
+    a=0;
+    arr=[]
+    console.log(step,a,arr)
+
+    return bot.sendMessage(
+      obj.message.chat.id,
+      `Iltimos /start buyrug'i bilan qaytadan ro'yhatdan o'ting !`
+    );
   }
   
 });
