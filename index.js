@@ -1,9 +1,34 @@
+const express=require('express')
+const mongoose=require('mongoose')
+const dotenv=require('dotenv')
+dotenv.config({path:'./config.env'})
+const userModel=require('./userModel')
+
+const app=express()
+
+const DB=process.env.DATABASE.replace('<password>',process.env.DATABASE_PASSWORD)
+mongoose.connect(DB,{}).then(()=>{
+  console.log('Databasega ulandi !')
+}).catch(err=>{
+  console.log(err.message)
+})
+
+app.listen(4000,'127.0.0.1',()=>{
+  console.log('4000 portga ulandi')
+})
+///////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////
+
 const TelegramApi = require("node-telegram-bot-api");
 
 const api = "5424238030:AAEDsh3TtZ58r3LtOOg-4zYn9D004IB74ds";
 let step = 0;
 let a = 0;
 let arr = [];
+let user={}
 const bot = new TelegramApi(api, { polling: true });
 
 // bot.setMyCommands([
@@ -21,6 +46,29 @@ bot.on("callback_query", (obj) => {
       obj.message.chat.id,
       "Qaysi universitetda tahsil olasiz ?"
     );
+  }
+  if(obj.data==='ha'){
+    user.name=arr[0]
+    user.tel=arr[1] 
+    user.location=arr[2]
+    user.age=arr[3]
+    user.programLang=arr[4]
+    user.unversity=arr[5]
+    const newObj=JSON.parse(JSON.stringify(user))
+
+    const addTour=async ()=>{
+      try{
+        console.log('databasega saqlandi')
+        await userModel.create(newObj)
+      }
+       catch(err){
+        console.log(err)
+       }
+    
+    
+  }
+  addTour()
+  
   }
   
 });
@@ -110,7 +158,7 @@ Tel nomeri: ${arr[1]},
 Lokatsiya: lat: ${arr[2].latitude}, long: ${arr[2].longitude},  
 Yoshi: ${arr[3]}, 
 Dasturlash tili: ${arr[4]}, 
-O'qish joyingi: ${arr[5]}`
+O'qish joyi: ${arr[5]}`
     );
     let Options = {
       reply_markup: JSON.stringify({
@@ -132,3 +180,6 @@ O'qish joyingi: ${arr[5]}`
     return;
   }
 });
+
+/////////////////////////////////////////////////////////////////
+
